@@ -31,4 +31,15 @@ public class ClienteService {
     public Cliente findByCpfcnpj(String cpfcnpj) {
         return repository.findByCpfcnpj(cpfcnpj);
     }
+
+    public Cliente update(Long id, Cliente cliente) {
+        Cliente clienteAtualizado = repository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado com o id: " + id));
+
+        clienteAtualizado.setNome(cliente.getNome());
+        clienteAtualizado.setCpfcnpj(cliente.getCpfcnpj());
+        clienteAtualizado.setEmail(cliente.getEmail());
+        clienteAtualizado.setContato(cliente.getContato());
+        clienteAtualizado.setDataNascimento(cliente.getDataNascimento());
+        return repository.save(clienteAtualizado);
+    }
 }

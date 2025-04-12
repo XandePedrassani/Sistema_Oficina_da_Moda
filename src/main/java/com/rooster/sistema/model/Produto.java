@@ -2,6 +2,8 @@ package com.rooster.sistema.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 
@@ -21,4 +23,26 @@ public class Produto {
 
     @Column(nullable = false, precision = 8, scale = 2)
     private BigDecimal preco;
+
+    @Column(name = "cod_barras", length = 50)
+    private String codBarras;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal custo;
+
+    @Column(columnDefinition = "TEXT")
+    private String caracteristicas;
+
+    @Column(name = "foto")//, columnDefinition = "oid"
+    //@JdbcTypeCode(SqlTypes.BINARY)
+    private Long fotoOid;
+
+    @Transient
+    private byte[] fotoData;
+
+    @Column(columnDefinition = "boolean default true")
+    private Boolean status = true;
+
+    @Column(length = 100)
+    private String marca;
 }

@@ -22,18 +22,18 @@ public class Cliente {
     @Column(nullable = false, length = 20)
     private String contato;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate dataNascimento;
 
     @Column(nullable = false)
     private LocalDate dataCadastro;
 
-    @Column(nullable = false, length = 20, unique = true)
+    @Column( length = 20, unique = true)
     private String cpfcnpj;
 
-    @Column(nullable = false)
+    @Column
     private String endereco;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 }

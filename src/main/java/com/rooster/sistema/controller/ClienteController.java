@@ -27,6 +27,10 @@ public class ClienteController {
     public Cliente save(@RequestBody Cliente cliente) {
         return service.save(cliente);
     }
+    @PutMapping("/{id}")
+    public Cliente update(@PathVariable Long id, @RequestBody Cliente cliente) {
+        return service.update(id, cliente);
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
