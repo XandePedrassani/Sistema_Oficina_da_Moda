@@ -38,6 +38,15 @@ public class ServicoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PutMapping
+    public ResponseEntity<?> updateServicoWithProdutos(@RequestBody ServicoRequestDTO dto) {
+        try {
+            Servico servico = service.updateWithProdutos(dto);
+            return ResponseEntity.ok(servico);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

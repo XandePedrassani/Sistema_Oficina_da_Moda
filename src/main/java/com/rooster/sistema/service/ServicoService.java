@@ -100,4 +100,43 @@ public class ServicoService {
 
         return servico;
     }
+
+    @Transactional
+    public Servico updateWithProdutos(ServicoRequestDTO dto) {
+        if (dto.id() == null) {
+            throw new IllegalArgumentException("ID do serviço não pode ser nulo para atualização");
+        }
+
+        Servico servico = servicoRepository.findById(dto.id())
+                .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
+
+        servico.setDtMovimento(dto.dtMovimento());
+        servico.setDtEntrega(dto.dtEntrega());
+        servico.setObservacao(dto.observacao());
+        servico.setCliente(dto.cliente());
+        servico.setUsuario(dto.usuario());
+        servico.setStatus(dto.status());
+
+        // Remove produtos antigos
+        servicoProdutoRepository.deleteAllByServico(servico);
+
+        // Adiciona os novos produtos
+        List<ServicoProduto> produtos = dto.produtos().stream()
+                .map(p -> {
+                    ServicoProduto sp = new ServicoProduto();
+                    sp.setServico(servico);
+                    sp.setProduto(p.produto());
+                    sp.setQuantidade(p.quantidade());
+                    sp.setPrecoUnitario(p.precoUnitario());
+                    sp.setObservacao(p.observacao());
+                    sp.getId().setSequencia(p.sequencia());
+                    return sp;
+                })
+                .toList();
+
+        servicoRepository.save(servico);
+        servicoProdutoRepository.saveAll(produtos);
+
+        return servico;
+    }
 }

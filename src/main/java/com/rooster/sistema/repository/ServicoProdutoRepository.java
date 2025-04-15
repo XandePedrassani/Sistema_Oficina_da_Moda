@@ -15,4 +15,5 @@ import java.util.Optional;
 public interface ServicoProdutoRepository extends JpaRepository<ServicoProduto, ServicoProdutoId> {
     Optional<ServicoProduto> findByServicoAndId_Sequencia(Servico servico, Integer sequencia);
 
+    void deleteAllByServico(Servico servico);
 }
