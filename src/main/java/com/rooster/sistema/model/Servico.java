@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -40,4 +42,7 @@ public class Servico {
 
     @Column(nullable = false, length = 20)
     private String status = "pendente";
+
+    @OneToMany(mappedBy = "servico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ServicoProduto> produtos;
 }

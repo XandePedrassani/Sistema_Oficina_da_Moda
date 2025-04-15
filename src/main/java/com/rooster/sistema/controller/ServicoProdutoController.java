@@ -18,18 +18,24 @@ public class ServicoProdutoController {
         return service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ServicoProduto findById(@PathVariable Long id) {
-        return service.findById(id);
-    }
+    // Novo endpoint para buscar por chave composta
+   /* @GetMapping("/{idServico}/{sequencia}")
+    public ServicoProduto findById(
+            @PathVariable("idServico") Long idServico,
+            @PathVariable("sequencia") Integer sequencia) {
+        return service.findById(idServico, sequencia);
+    }*/
 
     @PostMapping
     public ServicoProduto save(@RequestBody ServicoProduto servicoProduto) {
         return service.save(servicoProduto);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
-    }
+    // Novo endpoint para deletar por chave composta
+    /*@DeleteMapping("/{idServico}/{sequencia}")
+    public void delete(
+            @PathVariable("idServico") Long idServico,
+            @PathVariable("sequencia") Integer sequencia) {
+        service.delete(idServico, sequencia);
+    }*/
 }

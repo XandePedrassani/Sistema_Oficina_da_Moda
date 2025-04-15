@@ -39,11 +39,11 @@ CREATE TABLE servico (
 );
 
 CREATE TABLE servico_produto (
-    id SERIAL PRIMARY KEY,
     id_servico INTEGER NOT NULL REFERENCES servico(id),
     id_produto INTEGER NOT NULL REFERENCES produto(id),
     quantidade INTEGER NOT NULL,
     preco_unitario DECIMAL(8, 2) NOT NULL,
     observacao VARCHAR(255),
-    sequencia INTEGER NOT NULL
+    sequencia INTEGER NOT NULL,
+    PRIMARY KEY (id_servico, sequencia)
 );

@@ -20,6 +20,10 @@ public class ServicoController {
         return service.findAll();
     }
 
+    @GetMapping("/withProdutos")
+    public ResponseEntity<List<ServicoRequestDTO>> findAllWithProdutos() {
+        return ResponseEntity.ok(service.findAllWithProdutos());
+    }
     @GetMapping("/{id}")
     public Servico findById(@PathVariable Long id) {
         return service.findById(id);

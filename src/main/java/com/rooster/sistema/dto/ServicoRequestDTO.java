@@ -1,15 +1,19 @@
 package com.rooster.sistema.dto;
 
+import com.rooster.sistema.model.Cliente;
+import com.rooster.sistema.model.Usuario;
+
 import java.time.LocalDate;
 import java.util.List;
 
 
 public record ServicoRequestDTO(
+    Long id,
     LocalDate dtMovimento,
     LocalDate dtEntrega,
     String observacao,
-    Long idCliente,
-    Long idUsuario,
+    Cliente cliente,
+    Usuario usuario,
     String status,
     List<ServicoProdutoDTO> produtos)
 {}

@@ -12,11 +12,11 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "servico_produto")
 public class ServicoProduto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private ServicoProdutoId id;
 
     @ManyToOne
+    @MapsId("idServico")
     @JoinColumn(name = "id_servico", nullable = false)
     private Servico servico;
 
@@ -33,6 +33,4 @@ public class ServicoProduto {
     @Column(length = 255)
     private String observacao;
 
-    @Column(nullable = false)
-    private Integer sequencia;
 }
