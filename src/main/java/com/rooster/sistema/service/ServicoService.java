@@ -62,7 +62,9 @@ public class ServicoService {
     }
 
 
+    @Transactional
     public void delete(Long id) {
+        servicoProdutoRepository.deleteAllById_idServico(id);
         servicoRepository.deleteById(id);
     }
 
@@ -91,6 +93,9 @@ public class ServicoService {
                     sp.setQuantidade(p.quantidade());
                     sp.setPrecoUnitario(p.precoUnitario());
                     sp.setObservacao(p.observacao());
+                    if (sp.getId() == null) {
+                        sp.setId(new ServicoProdutoId());
+                    }
                     sp.getId().setSequencia(p.sequencia());
                     return sp;
                 })
@@ -129,6 +134,9 @@ public class ServicoService {
                     sp.setQuantidade(p.quantidade());
                     sp.setPrecoUnitario(p.precoUnitario());
                     sp.setObservacao(p.observacao());
+                    if (sp.getId() == null) {
+                        sp.setId(new ServicoProdutoId());
+                    }
                     sp.getId().setSequencia(p.sequencia());
                     return sp;
                 })

@@ -16,4 +16,5 @@ public interface ServicoProdutoRepository extends JpaRepository<ServicoProduto, 
     Optional<ServicoProduto> findByServicoAndId_Sequencia(Servico servico, Integer sequencia);
 
     void deleteAllByServico(Servico servico);
+    void deleteAllById_idServico(Long idServico);
 }
