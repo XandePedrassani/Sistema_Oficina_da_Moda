@@ -48,6 +48,7 @@ public class ImpressaoController {
 
             // Estilo e formatação
             EscPos escpos = new EscPos(new PrinterOutputStream(selectedPrinter));
+            escpos.setCharacterCodeTable(EscPos.CharacterCodeTable.CP860_Portuguese);
             Style titleStyle = new Style().setBold(true).setFontSize(Style.FontSize._2, Style.FontSize._2);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
