@@ -53,6 +53,7 @@ public class RelatorioServicoDTO {
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .doubleValue();
 
+        dto.setValorTotal(valorTotal);
         return dto;
     }
 }

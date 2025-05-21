@@ -15,6 +15,7 @@ public class ResultadoMensalDTO {
     private Integer mes;
     private Double faturamentoTotal;
     private Map<String, Integer> servicosPorStatus;
+    private Map<String, Double> faturamentoPorStatus; // Novo campo para totalizadores por status
     private List<FaturamentoPeriodoDTO> faturamentoPorSemana;
     private List<ProdutoEstatisticaDTO> produtosMaisUtilizados;
     
@@ -32,7 +33,7 @@ public class ResultadoMensalDTO {
     public static class ProdutoEstatisticaDTO {
         private Long idProduto;
         private String nomeProduto;
-        private Integer quantidade;
+        private Integer quantidade; // Garantindo que é Integer e não Double
         private Double valorTotal;
     }
 }

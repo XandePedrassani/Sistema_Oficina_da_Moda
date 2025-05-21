@@ -61,16 +61,35 @@ public class RelatorioService {
         // Calcular faturamento total
         double faturamentoTotal = servicos.stream()
                 .flatMap(s -> s.getProdutos().stream())
-                .map(sp -> BigDecimal.valueOf(sp.getQuantidade()).multiply(sp.getPrecoUnitario()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .doubleValue();
-
+                .mapToDouble(sp -> {
+                    // Conversão correta para multiplicação
+                    BigDecimal quantidade = new BigDecimal(sp.getQuantidade());
+                    return quantidade.multiply(sp.getPrecoUnitario()).doubleValue();
+                })
+                .sum();
+        
         // Contar serviços por status
         Map<String, Integer> servicosPorStatus = servicos.stream()
                 .collect(Collectors.groupingBy(
                         Servico::getStatus,
                         Collectors.summingInt(s -> 1)
                 ));
+        
+        // Calcular faturamento por status (NOVO)
+        Map<String, Double> faturamentoPorStatus = new HashMap<>();
+        for (Servico servico : servicos) {
+            String status = servico.getStatus();
+            double valorServico = servico.getProdutos().stream()
+                    .mapToDouble(sp -> {
+                        // Conversão correta para multiplicação
+                        BigDecimal quantidade = new BigDecimal(sp.getQuantidade());
+                        return quantidade.multiply(sp.getPrecoUnitario()).doubleValue();
+                    })
+                    .sum();
+            
+            faturamentoPorStatus.put(status, 
+                    faturamentoPorStatus.getOrDefault(status, 0.0) + valorServico);
+        }
         
         // Calcular faturamento por semana
         List<ResultadoMensalDTO.FaturamentoPeriodoDTO> faturamentoPorSemana = calcularFaturamentoPorSemana(servicos);
@@ -84,6 +103,7 @@ public class RelatorioService {
         resultado.setMes(mes);
         resultado.setFaturamentoTotal(faturamentoTotal);
         resultado.setServicosPorStatus(servicosPorStatus);
+        resultado.setFaturamentoPorStatus(faturamentoPorStatus); // NOVO
         resultado.setFaturamentoPorSemana(faturamentoPorSemana);
         resultado.setProdutosMaisUtilizados(produtosMaisUtilizados);
         
@@ -102,13 +122,13 @@ public class RelatorioService {
         for (Servico servico : servicos) {
             for (ServicoProduto sp : servico.getProdutos()) {
                 Long idProduto = sp.getProduto().getId();
-                String nomeProduto = sp.getProduto().getNome() + " - " + sp.getObservacao();
-                int quantidade = sp.getQuantidade();
-                Double valorTotal = BigDecimal.valueOf(sp.getQuantidade())
-                        .multiply(sp.getPrecoUnitario())
-                        .doubleValue();
-
-
+                String nomeProduto = sp.getProduto().getNome();
+                int quantidade = sp.getQuantidade(); // Garantindo que é Integer
+                
+                // Conversão correta para multiplicação
+                BigDecimal qtdBigDecimal = new BigDecimal(quantidade);
+                double valorTotal = qtdBigDecimal.multiply(sp.getPrecoUnitario()).doubleValue();
+                
                 if (produtosMap.containsKey(idProduto)) {
                     ResultadoMensalDTO.ProdutoEstatisticaDTO estatistica = produtosMap.get(idProduto);
                     estatistica.setQuantidade(estatistica.getQuantidade() + quantidade);
@@ -133,12 +153,15 @@ public class RelatorioService {
         
         for (Servico servico : servicos) {
             int semana = servico.getDtMovimento().get(WeekFields.of(Locale.getDefault()).weekOfMonth());
-
+            
             double valorServico = servico.getProdutos().stream()
-                    .map(sp -> BigDecimal.valueOf(sp.getQuantidade()).multiply(sp.getPrecoUnitario()))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .doubleValue();
-
+                    .mapToDouble(sp -> {
+                        // Conversão correta para multiplicação
+                        BigDecimal quantidade = new BigDecimal(sp.getQuantidade());
+                        return quantidade.multiply(sp.getPrecoUnitario()).doubleValue();
+                    })
+                    .sum();
+            
             faturamentoPorSemana.put(semana, faturamentoPorSemana.getOrDefault(semana, 0.0) + valorServico);
         }
         

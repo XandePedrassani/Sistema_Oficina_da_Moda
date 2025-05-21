@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/relatorios")
@@ -28,12 +27,8 @@ public class RelatorioController {
             @RequestParam(required = false) Long idCliente) {
         
         List<RelatorioServicoDTO> servicos = relatorioService.getRelatorioServicos(dataInicio, dataFim, status, idCliente);
-        double valorTotal = servicos.stream()
-                .map(RelatorioServicoDTO::getValorTotal)
-                .filter(Objects::nonNull)
-                .mapToDouble(Double::doubleValue)
-                .sum();
-
+        double valorTotal = servicos.stream().mapToDouble(RelatorioServicoDTO::getValorTotal).sum();
+        
         Map<String, Object> response = Map.of(
             "servicos", servicos,
             "totalServicos", servicos.size(),
