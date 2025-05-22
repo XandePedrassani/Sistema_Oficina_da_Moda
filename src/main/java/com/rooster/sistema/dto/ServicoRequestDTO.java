@@ -1,6 +1,7 @@
 package com.rooster.sistema.dto;
 
 import com.rooster.sistema.model.Cliente;
+import com.rooster.sistema.model.Status;
 import com.rooster.sistema.model.Usuario;
 
 import java.time.LocalDate;
@@ -14,6 +15,6 @@ public record ServicoRequestDTO(
     String observacao,
     Cliente cliente,
     Usuario usuario,
-    String status,
+    Status status,
     List<ServicoProdutoDTO> produtos)
 {}

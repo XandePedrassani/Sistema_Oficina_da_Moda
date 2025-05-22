@@ -19,10 +19,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ServicoService {
     private final ServicoRepository servicoRepository;
-
     private final ServicoProdutoRepository servicoProdutoRepository;
-
     private final ServicoProdutoService servicoProdutoService;
+    private final StatusService statusService;
 
     public List<Servico> findAll() {
         return servicoRepository.findAll();
@@ -56,11 +55,9 @@ public class ServicoService {
         );
     }
 
-
     public Servico findById(Long id) {
         return servicoRepository.findById(id).orElse(null);
     }
-
 
     @Transactional
     public void delete(Long id) {
@@ -70,19 +67,20 @@ public class ServicoService {
 
     @Transactional
     public Servico saveWithProdutos(ServicoRequestDTO dto) {
-
-        /*Cliente cliente = clienteRepository.findById(dto.idCliente())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-        Usuario usuario = usuarioRepository.findById(dto.idUsuario())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));*/
-
         Servico servico = new Servico();
         servico.setDtMovimento(dto.dtMovimento());
         servico.setDtEntrega(dto.dtEntrega());
         servico.setObservacao(dto.observacao());
         servico.setCliente(dto.cliente());
         servico.setUsuario(dto.usuario());
-        servico.setStatus(dto.status());
+        
+        // Verifica se o status foi fornecido, caso contrário usa o status padrão
+        if (dto.status() != null) {
+            servico.setStatus(dto.status());
+        } else {
+            servico.setStatus(statusService.getDefaultStatus());
+        }
+        
         servicoRepository.save(servico);
 
         List<ServicoProduto> produtos = dto.produtos().stream()
@@ -120,7 +118,11 @@ public class ServicoService {
         servico.setObservacao(dto.observacao());
         servico.setCliente(dto.cliente());
         servico.setUsuario(dto.usuario());
-        servico.setStatus(dto.status());
+        
+        // Verifica se o status foi fornecido, caso contrário mantém o status atual
+        if (dto.status() != null) {
+            servico.setStatus(dto.status());
+        }
 
         // Remove produtos antigos
         servicoProdutoRepository.deleteAllByServico(servico);
@@ -146,5 +148,16 @@ public class ServicoService {
         servicoProdutoRepository.saveAll(produtos);
 
         return servico;
+    }
+    
+    @Transactional
+    public Servico atualizarStatus(Long id, Long statusId) {
+        Servico servico = servicoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
+                
+        Status status = statusService.findById(statusId).toEntity();
+        servico.setStatus(status);
+        
+        return servicoRepository.save(servico);
     }
 }

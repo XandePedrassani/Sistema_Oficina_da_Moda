@@ -81,7 +81,7 @@ public class ImpressaoController {
             // Total e status
             escpos.writeLF("------------------------------------------");
             escpos.writeLF("Total: R$ " + total);
-            escpos.writeLF("Status: " + servico.getStatus());
+            escpos.writeLF("Status: " + servico.getStatus().getNome());
 
             // Observação geral
             if (servico.getObservacao() != null && !servico.getObservacao().isEmpty()) {

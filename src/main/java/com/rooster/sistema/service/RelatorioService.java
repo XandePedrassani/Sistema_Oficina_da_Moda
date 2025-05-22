@@ -3,8 +3,10 @@ package com.rooster.sistema.service;
 import com.rooster.sistema.dto.RelatorioServicoDTO;
 import com.rooster.sistema.dto.ResultadoMensalDTO;
 import com.rooster.sistema.model.Servico;
+import com.rooster.sistema.model.Status;
 import com.rooster.sistema.model.ServicoProduto;
 import com.rooster.sistema.repository.ServicoRepository;
+import com.rooster.sistema.repository.StatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class RelatorioService {
 
     @Autowired
     private ServicoRepository servicoRepository;
+    
+    @Autowired
+    private StatusRepository statusRepository;
 
     public List<RelatorioServicoDTO> getRelatorioServicos(LocalDate dataInicio, LocalDate dataFim, String status, Long idCliente) {
         List<Servico> servicos = servicoRepository.findAllWithProdutos();
@@ -28,10 +33,11 @@ public class RelatorioService {
                 .filter(s -> !s.getDtMovimento().isBefore(dataInicio) && !s.getDtMovimento().isAfter(dataFim))
                 .collect(Collectors.toList());
         
-        // Filtrar por status se fornecido
+        // Filtrar por status se fornecido (adaptado para status dinâmico)
         if (status != null && !status.isEmpty()) {
             servicos = servicos.stream()
-                    .filter(s -> s.getStatus().equalsIgnoreCase(status))
+                    .filter(s -> (s.getStatus() != null && s.getStatus().getNome().equalsIgnoreCase(status)) ||
+                                 (s.getStatus() == null && s.getStatus() != null && s.getStatus().getNome().equalsIgnoreCase(status)))
                     .collect(Collectors.toList());
         }
         
@@ -68,17 +74,17 @@ public class RelatorioService {
                 })
                 .sum();
         
-        // Contar serviços por status
-        Map<String, Integer> servicosPorStatus = servicos.stream()
-                .collect(Collectors.groupingBy(
-                        Servico::getStatus,
-                        Collectors.summingInt(s -> 1)
-                ));
+        // Contar serviços por status (adaptado para status dinâmico)
+        Map<String, Integer> servicosPorStatus = new HashMap<>();
+        for (Servico servico : servicos) {
+            String statusNome = getStatusNome(servico);
+            servicosPorStatus.put(statusNome, servicosPorStatus.getOrDefault(statusNome, 0) + 1);
+        }
         
-        // Calcular faturamento por status (NOVO)
+        // Calcular faturamento por status (adaptado para status dinâmico)
         Map<String, Double> faturamentoPorStatus = new HashMap<>();
         for (Servico servico : servicos) {
-            String status = servico.getStatus();
+            String statusNome = getStatusNome(servico);
             double valorServico = servico.getProdutos().stream()
                     .mapToDouble(sp -> {
                         // Conversão correta para multiplicação
@@ -87,8 +93,8 @@ public class RelatorioService {
                     })
                     .sum();
             
-            faturamentoPorStatus.put(status, 
-                    faturamentoPorStatus.getOrDefault(status, 0.0) + valorServico);
+            faturamentoPorStatus.put(statusNome, 
+                    faturamentoPorStatus.getOrDefault(statusNome, 0.0) + valorServico);
         }
         
         // Calcular faturamento por semana
@@ -103,11 +109,20 @@ public class RelatorioService {
         resultado.setMes(mes);
         resultado.setFaturamentoTotal(faturamentoTotal);
         resultado.setServicosPorStatus(servicosPorStatus);
-        resultado.setFaturamentoPorStatus(faturamentoPorStatus); // NOVO
+        resultado.setFaturamentoPorStatus(faturamentoPorStatus);
         resultado.setFaturamentoPorSemana(faturamentoPorSemana);
         resultado.setProdutosMaisUtilizados(produtosMaisUtilizados);
         
         return resultado;
+    }
+
+    // Método auxiliar para obter o nome do status (compatível com ambos os modelos durante migração)
+    private String getStatusNome(Servico servico) {
+        if (servico.getStatus() != null) {
+            return servico.getStatus().getNome();
+        } else {
+            return "pendente"; // valor padrão
+        }
     }
 
     public List<ResultadoMensalDTO.ProdutoEstatisticaDTO> getProdutosEstatisticas(LocalDate dataInicio, LocalDate dataFim) {

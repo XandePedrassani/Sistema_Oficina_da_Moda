@@ -34,7 +34,7 @@ public class RelatorioServicoDTO {
         dto.setObservacao(servico.getObservacao());
         dto.setCliente(servico.getCliente());
         dto.setUsuario(servico.getUsuario());
-        dto.setStatus(servico.getStatus());
+        dto.setStatus(servico.getStatus().getNome());
         
         List<ServicoProdutoDTO> produtosDTO = servico.getProdutos().stream()
                 .map(sp -> new ServicoProdutoDTO(
