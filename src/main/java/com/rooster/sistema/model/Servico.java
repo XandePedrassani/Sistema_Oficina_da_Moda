@@ -40,8 +40,9 @@ public class Servico {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    @Column(nullable = false, length = 20)
-    private String status = "pendente";
+    @ManyToOne
+    @JoinColumn(name = "id_status", nullable = false)
+    private Status status;
 
     @OneToMany(mappedBy = "servico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ServicoProduto> produtos;

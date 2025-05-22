@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/servicos")
@@ -24,6 +25,7 @@ public class ServicoController {
     public ResponseEntity<List<ServicoRequestDTO>> findAllWithProdutos() {
         return ResponseEntity.ok(service.findAllWithProdutos());
     }
+    
     @GetMapping("/{id}")
     public Servico findById(@PathVariable Long id) {
         return service.findById(id);
@@ -38,6 +40,7 @@ public class ServicoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
     @PutMapping
     public ResponseEntity<?> updateServicoWithProdutos(@RequestBody ServicoRequestDTO dto) {
         try {
@@ -51,5 +54,20 @@ public class ServicoController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+    
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> atualizarStatus(@PathVariable Long id, @RequestBody Map<String, Long> payload) {
+        try {
+            Long statusId = payload.get("statusId");
+            if (statusId == null) {
+                return ResponseEntity.badRequest().body("statusId é obrigatório");
+            }
+            
+            Servico servico = service.atualizarStatus(id, statusId);
+            return ResponseEntity.ok(servico);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
