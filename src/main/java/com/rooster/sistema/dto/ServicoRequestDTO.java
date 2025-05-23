@@ -17,4 +17,6 @@ public record ServicoRequestDTO(
     Usuario usuario,
     Status status,
     List<ServicoProdutoDTO> produtos)
-{}
+{
+
+}

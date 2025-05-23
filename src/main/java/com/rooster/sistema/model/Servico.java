@@ -45,5 +45,5 @@ public class Servico {
     private Status status;
 
     @OneToMany(mappedBy = "servico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ServicoProduto> produtos;
+    private List<ServicoProduto> servicoProdutos;
 }
