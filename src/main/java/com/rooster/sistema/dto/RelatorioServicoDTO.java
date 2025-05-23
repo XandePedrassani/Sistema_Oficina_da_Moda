@@ -36,7 +36,7 @@ public class RelatorioServicoDTO {
         dto.setUsuario(servico.getUsuario());
         dto.setStatus(servico.getStatus().getNome());
         
-        List<ServicoProdutoDTO> produtosDTO = servico.getProdutos().stream()
+        List<ServicoProdutoDTO> produtosDTO = servico.getServicoProdutos().stream()
                 .map(sp -> new ServicoProdutoDTO(
                         sp.getProduto(),
                         sp.getQuantidade(),
@@ -48,7 +48,7 @@ public class RelatorioServicoDTO {
         dto.setProdutos(produtosDTO);
         
         // Calcula o valor total do serviço
-        double valorTotal = servico.getProdutos().stream()
+        double valorTotal = servico.getServicoProdutos().stream()
                 .map(sp -> BigDecimal.valueOf(sp.getQuantidade()).multiply(sp.getPrecoUnitario()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .doubleValue();

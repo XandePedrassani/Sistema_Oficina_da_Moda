@@ -24,7 +24,10 @@ public class StatusController {
     public ResponseEntity<StatusDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(statusService.findById(id));
     }
-    
+    @GetMapping("/ordem/{ordem}")
+    public ResponseEntity<StatusDTO> findByOrdem(@PathVariable int ordem) {
+        return ResponseEntity.ok(statusService.findByOrdem(ordem));
+    }
     @PostMapping
     public ResponseEntity<StatusDTO> create(@RequestBody StatusDTO statusDTO) {
         return ResponseEntity.ok(statusService.save(statusDTO));

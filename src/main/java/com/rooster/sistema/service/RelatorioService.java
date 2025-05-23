@@ -7,6 +7,7 @@ import com.rooster.sistema.model.Status;
 import com.rooster.sistema.model.ServicoProduto;
 import com.rooster.sistema.repository.ServicoRepository;
 import com.rooster.sistema.repository.StatusRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RelatorioService {
 
-    @Autowired
-    private ServicoRepository servicoRepository;
-    
-    @Autowired
-    private StatusRepository statusRepository;
+    private final ServicoRepository servicoRepository;
 
     public List<RelatorioServicoDTO> getRelatorioServicos(LocalDate dataInicio, LocalDate dataFim, String status, Long idCliente) {
         List<Servico> servicos = servicoRepository.findAllWithProdutos();
@@ -32,16 +30,14 @@ public class RelatorioService {
         servicos = servicos.stream()
                 .filter(s -> !s.getDtMovimento().isBefore(dataInicio) && !s.getDtMovimento().isAfter(dataFim))
                 .collect(Collectors.toList());
-        
-        // Filtrar por status se fornecido (adaptado para status dinâmico)
+
         if (status != null && !status.isEmpty()) {
             servicos = servicos.stream()
                     .filter(s -> (s.getStatus() != null && s.getStatus().getNome().equalsIgnoreCase(status)) ||
                                  (s.getStatus() == null && s.getStatus() != null && s.getStatus().getNome().equalsIgnoreCase(status)))
                     .collect(Collectors.toList());
         }
-        
-        // Filtrar por cliente se fornecido
+
         if (idCliente != null) {
             servicos = servicos.stream()
                     .filter(s -> s.getCliente().getId().equals(idCliente))
@@ -66,7 +62,7 @@ public class RelatorioService {
         
         // Calcular faturamento total
         double faturamentoTotal = servicos.stream()
-                .flatMap(s -> s.getProdutos().stream())
+                .flatMap(s -> s.getServicoProdutos().stream())
                 .mapToDouble(sp -> {
                     // Conversão correta para multiplicação
                     BigDecimal quantidade = new BigDecimal(sp.getQuantidade());
@@ -85,7 +81,7 @@ public class RelatorioService {
         Map<String, Double> faturamentoPorStatus = new HashMap<>();
         for (Servico servico : servicos) {
             String statusNome = getStatusNome(servico);
-            double valorServico = servico.getProdutos().stream()
+            double valorServico = servico.getServicoProdutos().stream()
                     .mapToDouble(sp -> {
                         // Conversão correta para multiplicação
                         BigDecimal quantidade = new BigDecimal(sp.getQuantidade());
@@ -135,7 +131,7 @@ public class RelatorioService {
         Map<Long, ResultadoMensalDTO.ProdutoEstatisticaDTO> produtosMap = new HashMap<>();
         
         for (Servico servico : servicos) {
-            for (ServicoProduto sp : servico.getProdutos()) {
+            for (ServicoProduto sp : servico.getServicoProdutos()) {
                 Long idProduto = sp.getProduto().getId();
                 String nomeProduto = sp.getProduto().getNome();
                 int quantidade = sp.getQuantidade(); // Garantindo que é Integer
@@ -169,7 +165,7 @@ public class RelatorioService {
         for (Servico servico : servicos) {
             int semana = servico.getDtMovimento().get(WeekFields.of(Locale.getDefault()).weekOfMonth());
             
-            double valorServico = servico.getProdutos().stream()
+            double valorServico = servico.getServicoProdutos().stream()
                     .mapToDouble(sp -> {
                         // Conversão correta para multiplicação
                         BigDecimal quantidade = new BigDecimal(sp.getQuantidade());

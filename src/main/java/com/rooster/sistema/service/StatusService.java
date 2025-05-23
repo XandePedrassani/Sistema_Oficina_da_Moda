@@ -53,4 +53,10 @@ public class StatusService {
                     return statusRepository.save(defaultStatus);
                 });
     }
+
+    public StatusDTO findByOrdem(int ordem) {
+        return statusRepository.findByOrdem(ordem)
+                .map(StatusDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException("Status não encontrado"));
+    }
 }

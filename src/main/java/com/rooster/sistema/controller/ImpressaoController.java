@@ -66,7 +66,7 @@ public class ImpressaoController {
 
             // Produtos
             BigDecimal total = BigDecimal.ZERO;
-            for (ServicoProduto sp : servico.getProdutos()) {
+            for (ServicoProduto sp : servico.getServicoProdutos()) {
                 BigDecimal subtotal = sp.getPrecoUnitario().multiply(BigDecimal.valueOf(sp.getQuantidade()));
                 total = total.add(subtotal);
 
